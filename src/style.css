@@ -166,13 +166,13 @@ footer { padding: 8px 0 24px; color: #66716c; font-size: 10px; text-align: cente
 }
 
 @media (min-width: 380px) and (max-width: 430px) and (min-height: 800px) and (max-height: 900px) {
-  main[data-screen="play"][data-game="01"] .remaining { font-size: 110px; }
+  main[data-screen="play"][data-game="01"] .remaining { font-size: 122px; }
   main[data-screen="play"][data-game="01"] .round-darts { margin: 7px 0; }
-  main[data-screen="play"][data-game="01"] .dart-slot { min-height: 48px; }
+  main[data-screen="play"][data-game="01"] .dart-slot { min-height: 52px; }
   main[data-screen="play"][data-game="01"] .quick-row button,
   main[data-screen="play"][data-game="01"] .multiplier-tabs button,
-  main[data-screen="play"][data-game="01"] .miss-button { min-height: 46px; }
-  main[data-screen="play"][data-game="01"] .number-pad button { min-height: 52px; font-size: 19px; }
+  main[data-screen="play"][data-game="01"] .miss-button { min-height: 49px; }
+  main[data-screen="play"][data-game="01"] .number-pad button { min-height: 58px; font-size: 20px; }
 }
 
 .cricket-board { display: grid; gap: 5px; margin: 14px 0; }
