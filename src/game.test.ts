@@ -114,6 +114,14 @@ describe('01ゲーム', () => {
     expect(session.status).toBe('completed')
     expect(session.result?.cleared).toBe(false)
   })
+
+  it('PPRを有効得点と投数から計算する', () => {
+    const settings = zeroSettings()
+    const session = play(createSession(settings), [t(20), s(20), miss])
+    const result = calculateZeroOneResult(settings, session.throws)
+    expect(result.all.validScore).toBe(80)
+    expect(result.all.ppr).toBe(80)
+  })
 })
 
 describe('クリケット', () => {

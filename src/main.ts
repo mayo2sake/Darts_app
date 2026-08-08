@@ -175,15 +175,15 @@ function liveStats(session: GameSession): string {
     return `<section class="live-stats" aria-label="現時点のスタッツ">
       <div class="live-stats-heading"><h2>LIVE STATS</h2><span>${at}</span></div>
       <div class="live-stats-grid">
-        <article class="accent"><p>80％ <small>DARTSLIVE方式を1人用に準用</small></p><strong>${number(result.eighty.ppd)} <small>PPD</small></strong><dl><div><dt>PPR</dt><dd>${number(result.eighty.ppr)}</dd></div><div><dt>対象</dt><dd>${result.eighty.rounds}R / ${result.eighty.darts}投</dd></div></dl></article>
-        <article><p>全投 <small>HIGH ${result.all.highestRound} · BUST ${result.all.busts}</small></p><strong>${number(result.all.ppd)} <small>PPD</small></strong><dl><div><dt>PPR</dt><dd>${number(result.all.ppr)}</dd></div><div><dt>投数</dt><dd>${result.all.totalDarts}</dd></div></dl></article>
+        <article class="accent"><p>80％</p><strong>${number(result.eighty.ppr)} <small>PPR</small></strong><dl><div><dt>得点</dt><dd>${result.eighty.validScore}</dd></div><div><dt>対象</dt><dd>${result.eighty.rounds}R / ${result.eighty.darts}投</dd></div></dl></article>
+        <article><p>全投 <small>HIGH ${result.all.highestRound} · BUST ${result.all.busts}</small></p><strong>${number(result.all.ppr)} <small>PPR</small></strong><dl><div><dt>得点</dt><dd>${result.all.validScore}</dd></div><div><dt>投数</dt><dd>${result.all.totalDarts}</dd></div></dl></article>
       </div>
     </section>`
   }
   return `<section class="live-stats" aria-label="現時点のスタッツ">
     <div class="live-stats-heading"><h2>LIVE STATS</h2><span>${at}</span></div>
     <div class="live-stats-grid">
-      <article class="accent"><p>80％ <small>DARTSLIVE方式を1人用に準用</small></p><strong>${number(result.eighty.mpr)} <small>MPR</small></strong><dl><div><dt>マーク</dt><dd>${result.eighty.totalMarks}</dd></div><div><dt>対象</dt><dd>${result.eighty.rounds}R / ${result.eighty.totalDarts}投</dd></div></dl></article>
+      <article class="accent"><p>80％</p><strong>${number(result.eighty.mpr)} <small>MPR</small></strong><dl><div><dt>マーク</dt><dd>${result.eighty.totalMarks}</dd></div><div><dt>対象</dt><dd>${result.eighty.rounds}R / ${result.eighty.totalDarts}投</dd></div></dl></article>
       <article><p>全投 <small>${result.all.closedCount}/7 CLOSED</small></p><strong>${number(result.all.mpr)} <small>MPR</small></strong><dl><div><dt>マーク</dt><dd>${result.all.totalMarks}</dd></div><div><dt>投数</dt><dd>${result.all.totalDarts}</dd></div></dl></article>
     </div>
   </section>`
@@ -235,12 +235,12 @@ function statsCards(session: GameSession): string {
   const result = session.result ?? calculateResult(session.settings, session.throws)
   if (result.game === '01') {
     return `<div class="stats-pair">
-      <article class="stats-card accent"><p>80％スタッツ<small>DARTSLIVE方式を1人用に準用</small></p><strong>${number(result.eighty.ppd)} <small>PPD</small></strong><dl><div><dt>PPR</dt><dd>${number(result.eighty.ppr)}</dd></div><div><dt>対象</dt><dd>${result.eighty.rounds}R / ${result.eighty.darts}投</dd></div></dl></article>
-      <article class="stats-card"><p>全投スタッツ</p><strong>${number(result.all.ppd)} <small>PPD</small></strong><dl><div><dt>PPR</dt><dd>${number(result.all.ppr)}</dd></div><div><dt>総投数</dt><dd>${result.all.totalDarts}</dd></div><div><dt>High</dt><dd>${result.all.highestRound}</dd></div><div><dt>BUST</dt><dd>${result.all.busts}</dd></div></dl></article>
+      <article class="stats-card accent"><p>80％スタッツ</p><strong>${number(result.eighty.ppr)} <small>PPR</small></strong><dl><div><dt>有効得点</dt><dd>${result.eighty.validScore}</dd></div><div><dt>対象</dt><dd>${result.eighty.rounds}R / ${result.eighty.darts}投</dd></div></dl></article>
+      <article class="stats-card"><p>全投スタッツ</p><strong>${number(result.all.ppr)} <small>PPR</small></strong><dl><div><dt>有効得点</dt><dd>${result.all.validScore}</dd></div><div><dt>総投数</dt><dd>${result.all.totalDarts}</dd></div><div><dt>High</dt><dd>${result.all.highestRound}</dd></div><div><dt>BUST</dt><dd>${result.all.busts}</dd></div></dl></article>
     </div>`
   }
   return `<div class="stats-pair">
-    <article class="stats-card accent"><p>80％スタッツ<small>DARTSLIVE方式を1人用に準用</small></p><strong>${number(result.eighty.mpr)} <small>MPR</small></strong><dl><div><dt>マーク</dt><dd>${result.eighty.totalMarks}</dd></div><div><dt>対象</dt><dd>${result.eighty.rounds}R / ${result.eighty.totalDarts}投</dd></div></dl></article>
+    <article class="stats-card accent"><p>80％スタッツ</p><strong>${number(result.eighty.mpr)} <small>MPR</small></strong><dl><div><dt>マーク</dt><dd>${result.eighty.totalMarks}</dd></div><div><dt>対象</dt><dd>${result.eighty.rounds}R / ${result.eighty.totalDarts}投</dd></div></dl></article>
     <article class="stats-card"><p>全投スタッツ</p><strong>${number(result.all.mpr)} <small>MPR</small></strong><dl><div><dt>総マーク</dt><dd>${result.all.totalMarks}</dd></div><div><dt>総投数</dt><dd>${result.all.totalDarts}</dd></div><div><dt>クローズ</dt><dd>${result.all.closedCount}/7</dd></div></dl></article>
   </div>`
 }
@@ -288,9 +288,10 @@ function aggregateRows(sessions: GameSession[]): string {
     const periods = [{ label: '直近10', games: games.slice(0, 10) }, { label: '直近30', games: games.slice(0, 30) }, { label: '全期間', games }]
     return `<article class="aggregate-card"><h3>${group.label}</h3>${periods.map((period) => {
       const stats = period.games.map((session) => session.result ?? calculateResult(session.settings, session.throws))
-      const eighty = stats.reduce((sum, result) => sum + (result.game === '01' ? result.eighty.ppd : result.eighty.mpr), 0) / (stats.length || 1)
-      const all = stats.reduce((sum, result) => sum + (result.game === '01' ? result.all.ppd : result.all.mpr), 0) / (stats.length || 1)
-      return `<div><span>${period.label}<small>${period.games.length} games</small></span><span><small>80％</small><strong>${number(eighty)}</strong></span><span><small>全投</small><strong>${number(all)}</strong></span></div>`
+      const eighty = stats.reduce((sum, result) => sum + (result.game === '01' ? result.eighty.ppr : result.eighty.mpr), 0) / (stats.length || 1)
+      const all = stats.reduce((sum, result) => sum + (result.game === '01' ? result.all.ppr : result.all.mpr), 0) / (stats.length || 1)
+      const unit = group.label === 'CRICKET' ? 'MPR' : 'PPR'
+      return `<div><span>${period.label}<small>${period.games.length} games</small></span><span><small>80％ ${unit}</small><strong>${number(eighty)}</strong></span><span><small>全投 ${unit}</small><strong>${number(all)}</strong></span></div>`
     }).join('')}</article>`
   }).join('')
 }
@@ -300,8 +301,8 @@ function historyView(): string {
     ? '<div class="empty-state"><strong>まだ履歴がありません</strong><p>ゲームを完了すると、ここに記録されます。</p></div>'
     : completedSessions.map((session) => {
       const result = session.result ?? calculateResult(session.settings, session.throws)
-      const eighty = result.game === '01' ? `${number(result.eighty.ppd)} PPD` : `${number(result.eighty.mpr)} MPR`
-      const all = result.game === '01' ? `${number(result.all.ppd)} PPD` : `${number(result.all.mpr)} MPR`
+      const eighty = result.game === '01' ? `${number(result.eighty.ppr)} PPR` : `${number(result.eighty.mpr)} MPR`
+      const all = result.game === '01' ? `${number(result.all.ppr)} PPR` : `${number(result.all.mpr)} MPR`
       return `<article class="history-item"><button data-action="detail" data-id="${session.id}"><span><small>${dateTime(session.startedAt)}</small><strong>${gameLabel(session)} · ${result.cleared ? 'クリア' : '未クリア'}</strong><em>${settingsLabel(session.settings)}</em></span><span><small>80％ ${eighty}</small><small>全投 ${all}</small><b>詳細 →</b></span></button><button class="delete-button" data-action="delete" data-id="${session.id}" aria-label="この履歴を削除">削除</button></article>`
     }).join('')
   return shell(`
