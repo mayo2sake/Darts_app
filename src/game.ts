@@ -317,3 +317,16 @@ export function abortSession(session: GameSession, now = new Date()): GameSessio
   const timestamp = now.toISOString()
   return { ...session, status: 'aborted', updatedAt: timestamp, endedAt: timestamp }
 }
+
+export function finishCricketSession(session: GameSession, now = new Date()): GameSession {
+  if (session.status !== 'in_progress') throw new Error('進行中のゲームではありません')
+  if (session.settings.game !== 'cricket') throw new Error('手動終了できるのはクリケットだけです')
+  const timestamp = now.toISOString()
+  return {
+    ...session,
+    status: 'completed',
+    updatedAt: timestamp,
+    endedAt: timestamp,
+    result: calculateCricketResult(session.settings, session.throws),
+  }
+}

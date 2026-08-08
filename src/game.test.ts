@@ -4,6 +4,7 @@ import {
   calculateCricketResult,
   calculateZeroOneResult,
   createSession,
+  finishCricketSession,
   marksFor,
   replayCricket,
   replayZeroOne,
@@ -172,5 +173,19 @@ describe('クリケット', () => {
     expect(state.marks[20]).toBe(1)
     expect(state.closeInfo).toHaveLength(0)
     expect(calculateCricketResult(settings, undone.throws).all.totalMarks).toBe(1)
+  })
+
+  it('対戦中でも現時点の投球で手動終了し、結果を保存できる', () => {
+    const settings = { game: 'cricket', cricketMode: 'twenty-rounds' } as const
+    const playing = play(createSession(settings), [t(20), d(19), miss])
+    const ended = finishCricketSession(playing, new Date('2026-01-01T01:00:00.000Z'))
+    expect(ended.status).toBe('completed')
+    expect(ended.endedAt).toBe('2026-01-01T01:00:00.000Z')
+    expect(ended.result?.game).toBe('cricket')
+    if (ended.result?.game !== 'cricket') throw new Error('クリケット結果が必要です')
+    expect(ended.result.cleared).toBe(false)
+    expect(ended.result.all.totalDarts).toBe(3)
+    expect(ended.result.all.totalMarks).toBe(5)
+    expect(ended.result.all.mpr).toBe(5)
   })
 })

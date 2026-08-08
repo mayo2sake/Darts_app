@@ -5,6 +5,7 @@ import {
   addThrow,
   calculateResult,
   createSession,
+  finishCricketSession,
   formatThrow,
   replayCricket,
   replayZeroOne,
@@ -59,13 +60,13 @@ function shell(content: string, title = APP_NAME): string {
     ? '<button class="icon-button" data-action="back" aria-label="前の画面へ戻る">←</button>'
     : '<span class="brand-mark" aria-hidden="true">◎</span>'
   return `
-    <header class="app-header">
+    <header class="app-header app-header-${screen}">
       ${back}
       <div><p class="eyebrow">SOLO DARTS</p><h1>${title}</h1></div>
       <span class="offline-indicator" title="端末内保存"><span>●</span> LOCAL</span>
     </header>
     ${saveError ? `<div class="error-banner" role="alert">${saveError}</div>` : ''}
-    <main id="main">${content}</main>
+    <main id="main" data-screen="${screen}">${content}</main>
   `
 }
 
@@ -159,8 +160,33 @@ function inputPad(): string {
     </section>`
 }
 
-function playActions(canUndo: boolean): string {
-  return `<div class="play-actions"><button data-action="undo" ${canUndo ? '' : 'disabled'}>↶ UNDO</button><button class="danger-link" data-action="abort">ゲーム中止</button></div>`
+function playActions(canUndo: boolean, canFinish = false): string {
+  return `<div class="play-actions ${canFinish ? 'cricket-actions' : ''}">
+    ${canFinish ? '<button class="finish-button" data-action="finish">ゲーム終了・スタッツ保存</button>' : ''}
+    <button data-action="undo" ${canUndo ? '' : 'disabled'}>↶ UNDO</button>
+    <button class="danger-link" data-action="abort">ゲーム中止</button>
+  </div>`
+}
+
+function liveStats(session: GameSession): string {
+  const result = calculateResult(session.settings, session.throws)
+  const at = `${session.throws.length}投時点`
+  if (result.game === '01') {
+    return `<section class="live-stats" aria-label="現時点のスタッツ">
+      <div class="live-stats-heading"><h2>LIVE STATS</h2><span>${at}</span></div>
+      <div class="live-stats-grid">
+        <article class="accent"><p>80％ <small>DARTSLIVE方式を1人用に準用</small></p><strong>${number(result.eighty.ppd)} <small>PPD</small></strong><dl><div><dt>PPR</dt><dd>${number(result.eighty.ppr)}</dd></div><div><dt>対象</dt><dd>${result.eighty.rounds}R / ${result.eighty.darts}投</dd></div></dl></article>
+        <article><p>全投 <small>HIGH ${result.all.highestRound} · BUST ${result.all.busts}</small></p><strong>${number(result.all.ppd)} <small>PPD</small></strong><dl><div><dt>PPR</dt><dd>${number(result.all.ppr)}</dd></div><div><dt>投数</dt><dd>${result.all.totalDarts}</dd></div></dl></article>
+      </div>
+    </section>`
+  }
+  return `<section class="live-stats" aria-label="現時点のスタッツ">
+    <div class="live-stats-heading"><h2>LIVE STATS</h2><span>${at}</span></div>
+    <div class="live-stats-grid">
+      <article class="accent"><p>80％ <small>DARTSLIVE方式を1人用に準用</small></p><strong>${number(result.eighty.mpr)} <small>MPR</small></strong><dl><div><dt>マーク</dt><dd>${result.eighty.totalMarks}</dd></div><div><dt>対象</dt><dd>${result.eighty.rounds}R / ${result.eighty.totalDarts}投</dd></div></dl></article>
+      <article><p>全投 <small>${result.all.closedCount}/7 CLOSED</small></p><strong>${number(result.all.mpr)} <small>MPR</small></strong><dl><div><dt>マーク</dt><dd>${result.all.totalMarks}</dd></div><div><dt>投数</dt><dd>${result.all.totalDarts}</dd></div></dl></article>
+    </div>
+  </section>`
 }
 
 function zeroOnePlay(session: GameSession): string {
@@ -177,6 +203,7 @@ function zeroOnePlay(session: GameSession): string {
       <div class="round-darts">${currentRoundDarts(session, state.nextRound)}</div>
       <div class="previous-round"><span>直前ラウンド</span><strong>${previous === undefined ? '—' : previous.bust ? 'BUST / 0' : `${previous.validScore}点`}</strong></div>
     </section>
+    ${liveStats(session)}
     ${inputPad()}
     ${playActions(currentThrows.length > 0 || session.throws.length > 0)}
   `, settingsLabel(session.settings))
@@ -198,8 +225,9 @@ function cricketPlay(session: GameSession): string {
       <div class="round-darts">${currentRoundDarts(session, state.nextRound)}</div>
       <div class="previous-round"><span>総マーク</span><strong>${state.totalMarks}</strong></div>
     </section>
+    ${liveStats(session)}
     ${inputPad()}
-    ${playActions(session.throws.length > 0)}
+    ${playActions(session.throws.length > 0, true)}
   `, settingsLabel(session.settings))
 }
 
@@ -391,6 +419,16 @@ app.addEventListener('click', (event) => {
     const aborted = abortSession(activeSession)
     activeSession = undefined
     void persist(aborted).then(() => { screen = 'home'; render() })
+  }
+  if (action === 'finish' && activeSession?.settings.game === 'cricket' && window.confirm('現時点のスタッツを保存して、クリケットを終了しますか？')) {
+    const completed = finishCricketSession(activeSession)
+    viewingSession = completed
+    activeSession = undefined
+    void persist(completed).then(async () => {
+      completedSessions = await listCompletedSessions()
+      screen = 'result'
+      render()
+    })
   }
   if (action === 'repeat' && viewingSession !== undefined) {
     activeSession = createSession(viewingSession.settings)
