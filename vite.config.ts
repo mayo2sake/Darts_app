@@ -16,6 +16,7 @@ export default defineConfig({
         id: base,
         name: 'Solo Darts Stats',
         short_name: 'Solo Darts',
+        lang: 'ja',
         description: '1投ずつ記録できる、端末内保存の1人用ダーツスタッツアプリ',
         start_url: base,
         scope: base,
