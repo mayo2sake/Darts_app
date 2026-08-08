@@ -62,6 +62,7 @@ main { padding: 16px 16px calc(28px + var(--safe-bottom)); }
 .notice { margin: 12px 0; padding: 14px; border-left: 3px solid #e5b94f; background: #1c1b14; color: #d4d0bd; font-size: 11px; line-height: 1.6; }
 .notice p { margin: 4px 0 0; }
 footer { padding: 8px 0 24px; color: #66716c; font-size: 10px; text-align: center; }
+.app-version { display: block; margin-top: 5px; color: #4f5a55; font-size: 8px; letter-spacing: .14em; }
 
 .settings-form { display: grid; gap: 28px; padding-top: 12px; }
 .settings-form section { min-width: 0; }

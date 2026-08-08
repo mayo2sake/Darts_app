@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitest/config'
 import { VitePWA } from 'vite-plugin-pwa'
+import packageJson from './package.json' with { type: 'json' }
 
 declare const process: { env: Record<string, string | undefined> }
 
@@ -8,6 +9,9 @@ const base = repository ? `/${repository}/` : '/'
 
 export default defineConfig({
   base,
+  define: {
+    __APP_VERSION__: JSON.stringify(packageJson.version),
+  },
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',

@@ -93,7 +93,7 @@ function homeView(): string {
       <article class="privacy-card"><span class="menu-icon">⌂</span><span><strong>完全ローカル</strong><small>通信・ログイン・解析なし</small></span></article>
     </section>
     <aside class="notice"><strong>保存について</strong><p>履歴はIndexedDBにのみ保存されます。ブラウザのサイトデータを削除すると履歴も消えます。</p></aside>
-    <footer>本アプリはDARTSLIVE公式アプリではありません。</footer>
+    <footer>本アプリはDARTSLIVE公式アプリではありません。<small class="app-version">VERSION ${__APP_VERSION__}</small></footer>
   `)
 }
 
