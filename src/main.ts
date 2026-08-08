@@ -56,6 +56,9 @@ function settingsLabel(settings: GameSettings): string {
 }
 
 function shell(content: string, title = APP_NAME): string {
+  const activeGame = screen === 'play' && activeSession !== undefined
+    ? activeSession.settings.game
+    : ''
   const back = screen !== 'home' && screen !== 'play'
     ? '<button class="icon-button" data-action="back" aria-label="前の画面へ戻る">←</button>'
     : '<span class="brand-mark" aria-hidden="true">◎</span>'
@@ -66,7 +69,7 @@ function shell(content: string, title = APP_NAME): string {
       <span class="offline-indicator" title="端末内保存"><span>●</span> LOCAL</span>
     </header>
     ${saveError ? `<div class="error-banner" role="alert">${saveError}</div>` : ''}
-    <main id="main" data-screen="${screen}">${content}</main>
+    <main id="main" data-screen="${screen}" data-game="${activeGame}">${content}</main>
   `
 }
 
